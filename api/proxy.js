@@ -5,8 +5,17 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  const { apiKey, ...body } = req.body;
-  const apiUrl = 'https://api.wecreateproblems.com/ats/wecp/createInterview';
+  const { apiKey, action, ...body } = req.body;
+  let apiUrl;
+
+  if (action === 'create') {
+    apiUrl = 'https://api.wecreateproblems.com/ats/wecp/createInterview';
+  } else if (action === 'schedule') {
+    const { orgName, groupId, interviewId } = body;
+    apiUrl = `https://api.wecreateproblems.com/orgs/${orgName}/groups/${groupId}/interviews/${interviewId}/scheduleInterviews`;
+  } else {
+    return res.status(400).json({ error: 'Invalid action' });
+  }
 
   try {
     const response = await axios.post(apiUrl, body, {
@@ -19,6 +28,6 @@ module.exports = async (req, res) => {
     res.status(200).json(response.data);
   } catch (error) {
     console.error('Error:', error.response ? error.response.data : error.message);
-    res.status(500).json({ error: 'Failed to create interview', details: error.response ? error.response.data : error.message });
+    res.status(500).json({ error: 'API request failed', details: error.response ? error.response.data : error.message });
   }
 };
