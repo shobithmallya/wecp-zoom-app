@@ -3,7 +3,7 @@ import axios from 'axios';
 
 interface ScheduleInterviewProps {
   apiKey: string;
-  onSchedule: (link: string) => void;
+  onSchedule: (interviewData: any) => void;
 }
 
 const ScheduleInterview: React.FC<ScheduleInterviewProps> = ({ apiKey, onSchedule }) => {
@@ -24,8 +24,9 @@ const ScheduleInterview: React.FC<ScheduleInterviewProps> = ({ apiKey, onSchedul
         }
       );
 
-      if (response.data && response.data.interviewLink) {
-        onSchedule(response.data.interviewLink);
+      if (response.data && response.data.interviewId) {
+        console.log('Interview created successfully:', response.data);
+        onSchedule(response.data);
       } else {
         console.error('Invalid response from API:', response.data);
       }

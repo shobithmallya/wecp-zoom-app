@@ -3,11 +3,11 @@ import './App.css';
 import zoomSdk from './zoomSdk';
 import ApiKeyInput from './components/ApiKeyInput';
 import ScheduleInterview from './components/ScheduleInterview';
-import InterviewLink from './components/InterviewLink';
+import InterviewDetails from './components/InterviewDetails';
 
 const App: React.FC = () => {
   const [apiKey, setApiKey] = useState<string | null>(null);
-  const [interviewLink, setInterviewLink] = useState<string | null>(null);
+  const [interviewData, setInterviewData] = useState<any | null>(null);
   const [isZoomInitialized, setIsZoomInitialized] = useState(false);
 
   useEffect(() => {
@@ -47,10 +47,10 @@ const App: React.FC = () => {
     <div className="App">
       <h1>WeCP Zoom Interview Scheduler</h1>
       {!apiKey && <ApiKeyInput onApiKeySubmit={setApiKey} />}
-      {apiKey && !interviewLink && (
-        <ScheduleInterview apiKey={apiKey} onSchedule={setInterviewLink} />
+      {apiKey && !interviewData && (
+        <ScheduleInterview apiKey={apiKey} onSchedule={setInterviewData} />
       )}
-      {interviewLink && <InterviewLink link={interviewLink} />}
+      {interviewData && <InterviewDetails data={interviewData} />}
     </div>
   );
 };
