@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
 
     res.status(200).json(response.data);
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Failed to create interview' });
+    console.error('Error:', error.response ? error.response.data : error.message);
+    res.status(500).json({ error: 'Failed to create interview', details: error.response ? error.response.data : error.message });
   }
 };
