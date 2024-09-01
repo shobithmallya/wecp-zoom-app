@@ -8,9 +8,11 @@ interface ScheduleInterviewProps {
 
 const ScheduleInterview: React.FC<ScheduleInterviewProps> = ({ apiKey, onSchedule }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSchedule = async () => {
     setIsLoading(true);
+    setError(null);
     try {
       // Step 1: Create Interview
       console.log('Creating interview...');
@@ -30,7 +32,7 @@ const ScheduleInterview: React.FC<ScheduleInterviewProps> = ({ apiKey, onSchedul
 
         // Step 2: Schedule Interview
         console.log('Scheduling interview...');
-        const scheduleResponse = await axios.post('/api/proxy', {
+        const scheduleData = {
           action: 'schedule',
           apiKey,
           orgName: 'wecreateproblems-shobith', // Replace with your org name
@@ -45,7 +47,12 @@ const ScheduleInterview: React.FC<ScheduleInterviewProps> = ({ apiKey, onSchedul
               interviewTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // Schedule for tomorrow
             }
           ]
-        });
+        };
+        console.log('Schedule request data:', scheduleData);
+
+        const scheduleResponse = await axios.post('/api/proxy', scheduleData);
+
+        console.log('Schedule API response:', scheduleResponse.data);
 
         if (scheduleResponse.data && scheduleResponse.data.length > 0) {
           console.log('Interview scheduled successfully:', scheduleResponse.data);
@@ -55,9 +62,11 @@ const ScheduleInterview: React.FC<ScheduleInterviewProps> = ({ apiKey, onSchedul
           });
         } else {
           console.error('Invalid response from schedule API:', scheduleResponse.data);
+          setError('Failed to schedule interview. Please check the console for details.');
         }
       } else {
         console.error('Invalid response from create API:', createResponse.data);
+        setError('Failed to create interview. Please check the console for details.');
       }
     } catch (error) {
       console.error('Error scheduling interview:', error);
@@ -65,6 +74,9 @@ const ScheduleInterview: React.FC<ScheduleInterviewProps> = ({ apiKey, onSchedul
         console.error('Axios error details:', error.response?.data);
         console.error('Axios error status:', error.response?.status);
         console.error('Axios error headers:', error.response?.headers);
+        setError(`Error: ${error.response?.data?.errorMessage || error.message}`);
+      } else {
+        setError('An unexpected error occurred. Please check the console for details.');
       }
     } finally {
       setIsLoading(false);
@@ -76,6 +88,7 @@ const ScheduleInterview: React.FC<ScheduleInterviewProps> = ({ apiKey, onSchedul
       <button onClick={handleSchedule} disabled={isLoading}>
         {isLoading ? 'Scheduling...' : 'Schedule Interview'}
       </button>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
   );
 };

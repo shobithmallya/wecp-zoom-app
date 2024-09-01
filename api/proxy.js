@@ -17,6 +17,9 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'Invalid action' });
   }
 
+  console.log(`Making ${action} request to: ${apiUrl}`);
+  console.log('Request body:', body);
+
   try {
     const response = await axios.post(apiUrl, body, {
       headers: {
@@ -25,9 +28,10 @@ module.exports = async (req, res) => {
       },
     });
 
+    console.log(`${action} API response:`, response.data);
     res.status(200).json(response.data);
   } catch (error) {
-    console.error('Error:', error.response ? error.response.data : error.message);
+    console.error(`Error in ${action} API:`, error.response ? error.response.data : error.message);
     res.status(500).json({ error: 'API request failed', details: error.response ? error.response.data : error.message });
   }
 };
